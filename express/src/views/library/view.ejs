@@ -1,0 +1,12 @@
+<%- include('../port/header', { title: title }) %>
+
+<h2><%= book.title %></h2><br><br>
+<p><%= book.description %></p><br><br>
+<p><%= book.author %></p><br><br>
+<p><%= book.favorite %></p><br><br>
+<p><%= book.fileCover %></p><br><br>
+<p><%= book.fileName %></p><br><br>
+<p><a href="/api/books/<%= book.id %>/download" download>Скачать книгу</a></p><br><br>
+<p><%= counter%></p><br><br>
+
+<%- include ('../port/footer') %>

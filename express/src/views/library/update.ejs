@@ -1,0 +1,30 @@
+<%- include('../port/header', { title: title }) %>
+
+<h1><%= title %></h1>
+<form action="/api/books/update/<%= book.id %>" method="post" enctype="multipart/form-data">
+    <label>Название</label><br>
+    <input type="text" name="title" value="<%= book.title %>"/><br><br>
+
+    <label>Описание</label><br>
+    <input type="text" name="description" value="<%= book.description %>"/><br><br>
+
+    <label>Автор</label><br>
+    <input type="text" name="author" value="<%= book.author %>"/><br><br>
+
+    <label>Избранное</label><br>
+    <input type="text" name="favorite" value="<%= book.favorite %>"/><br><br>
+
+    <label>Обложка</label><br>
+    <input type="text" name="fileCover" value="<%= book.fileCover %>"/><br><br>
+
+    <label>Название файла</label><br>
+    <input type="text" name="fileName" value="<%= book.fileName %>"/><br><br>
+
+    <label>Файл книги</label><br>
+    <input type="file" name="fileBook"/><br><br>
+
+    <input type="submit" value="Отправить"/>
+</form>
+
+
+<%- include ('../port/footer') %>

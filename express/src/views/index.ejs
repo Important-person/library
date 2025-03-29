@@ -1,0 +1,25 @@
+<%- include('./port/header', { title: title }) %>
+
+<h1><%= title %></h1>
+
+<% if (books.length > 0) { %>
+    <ul>
+        <% for (let i = 0; i < books.length; i++) { %>
+            <li>
+                <a href="/api/books/<%= books[i].id %>"><%= books[i].title %></a>
+                <form action="/api/books/delete/<%= books[i].id %>" method="POST" style="display:inline;">
+                    <button type="submit">Удалить</button>
+                </form>
+                <a href="/api/books/update/<%= books[i].id %>">
+                    <button type="button">Редактировать</button>
+                </a>
+            </li>
+        <% } %>
+    </ul>
+<% } else { %>
+    <h2>Список пуст</h2>
+<% } %>
+
+<%- include('./port/footer') %>
+
+

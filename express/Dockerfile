@@ -1,0 +1,13 @@
+FROM node:20.11.1
+
+WORKDIR /express
+
+ARG NODE_ENV=production
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY ./src /express/src
+
+CMD [ "npm", "run", "server" ]
