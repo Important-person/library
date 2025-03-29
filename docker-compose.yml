@@ -1,0 +1,26 @@
+services:
+  counter:
+    build:
+      context: ./counter_express
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    volumes:
+      - ./counter_express/src:/app
+      - /app/node_modules
+    environment:
+      - PORT=3001
+
+  express_app:
+    build:
+      context: ./express
+      dockerfile: Dockerfile
+    ports:
+      - 3002:3002
+    volumes:
+      - ./express/src:/app
+      - /app/node_modules
+    environment:
+      - PORT=3002
+    depends_on:
+      - counter
