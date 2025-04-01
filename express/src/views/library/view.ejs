@@ -6,7 +6,7 @@
 <p><%= book.favorite %></p><br><br>
 <p><%= book.fileCover %></p><br><br>
 <p><%= book.fileName %></p><br><br>
-<p><a href="/api/books/<%= book.id %>/download" download>Скачать книгу</a></p><br><br>
+<p><a href="/api/books/<%= book._id.toString() %>/download" download>Скачать книгу</a></p><br><br>
 <p><%= counter%></p><br><br>
 
 <%- include ('../port/footer') %>
