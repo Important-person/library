@@ -6,14 +6,26 @@ const router = express.Router();
 const fileMulter = require('../middleware/multerUpload');
 
 router.get('/', async (req, res) => {
-    const books = await Book.find({});
-    res.render('index', {
-        title: 'Список книг',
-        books
-    })
+    try {
+        if (!req.isAuthenticated()) {
+            return res.redirect('/api/user/login');
+        } else {
+            const books = await Book.find({});
+            return res.render('index', {
+                title: 'Главная страница',
+                books
+            });
+        }
+    } catch(err) {
+        console.error(err);
+    }
 })
 
 router.get('/create', (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.redirect('/api/user/login');
+    }
+
     res.render('library/create', {
         title: 'Новая книга'
     })
@@ -21,9 +33,6 @@ router.get('/create', (req, res) => {
 
 router.post('/create', fileMulter.single("fileBook"), async (req, res) => {
     const { title, description, author, favorite, fileCover, fileName } = req.body;
-
-    const fileBook = req.file;
-
     const newBook = new Book({
         title,
         description,
@@ -42,11 +51,11 @@ router.post('/create', fileMulter.single("fileBook"), async (req, res) => {
     }
 })
 
-router.post('/api/user/login', (req, res) => {
-    res.status(201).json({ id: 1, mail: "test@mail.ru" });
-})
-
 router.get('/update/:id', async (req, res) => {
+    if(!req.isAuthenticated()) {
+        return res.redirect('/api/user/login');
+    }
+
     const { id } = req.params;
     try {
         const book = await Book.findById(id);
@@ -61,7 +70,6 @@ router.get('/update/:id', async (req, res) => {
 
 router.post('/update/:id', fileMulter.single("fileBook"), async (req, res) => {
     const { title, description, author, favorite, fileCover, fileName } = req.body;
-    const fileBook = req.file;
     const { id } = req.params;
 
     const updateBook = {
@@ -83,8 +91,11 @@ router.post('/update/:id', fileMulter.single("fileBook"), async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-    const { id } = req.params;
+    if(!req.isAuthenticated()) {
+        return res.redirect('/api/user/login');
+    }
 
+    const { id } = req.params;
     const book = await Book.findById(id);
     if (!book) return res.redirect('/errors/404');
 
@@ -128,8 +139,11 @@ router.post('/delete/:id', async (req, res) => {
 })
 
 router.get('/:id/download', async (req, res) => {
+    if(!req.isAuthenticated()) {
+        return res.redirect('/api/user/login');
+    }
+
     const { id } = req.params;
-    
     try {
         const book = await Book.findById(id);
         if (!book?.fileName) return res.status(404).json({message: 'Файл не найден'});
