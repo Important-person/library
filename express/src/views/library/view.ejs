@@ -9,4 +9,41 @@
 <p><a href="/api/books/<%= book._id.toString() %>/download" download>Скачать книгу</a></p><br><br>
 <p><%= counter%></p><br><br>
 
+<h2>Комментарии</h2>
+<ul id="comments">
+    <% comments.forEach(c => { %>
+        <li><%= c.username %>: <%= c.message %></li>
+    <% }) %>
+</ul>
+
+<form id="comment-form">
+    <input type="text" id="message" placeholder="Комментарий" required>
+    <button type="submit">Отправить</button>
+</form>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+    const bookId = "<%= book._id %>";
+    const username = "<%= user.username %>";
+
+    socket.emit('join_book', bookId);
+
+    const form = document.getElementById('comment-form');
+    const commentsList = document.getElementById('comments');
+
+    form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const message = document.getElementById('message').value;
+    socket.emit('new_comment', { bookId, username, message });
+    form.reset();
+    });
+
+    socket.on('new_comment', ({ username, message }) => {
+    const li = document.createElement('li');
+    li.textContent = `${username}: ${message}`;
+    commentsList.appendChild(li);
+    });
+</script>
+
 <%- include ('../port/footer') %>

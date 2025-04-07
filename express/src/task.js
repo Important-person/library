@@ -1,6 +1,7 @@
 const express = require('express');
 
 const app = express();
+const http = require('http').createServer(app);
 const indexRouter = require('./routers/index');
 const userRouter = require('./routers/user');
 const error = require('./middleware/error404');
@@ -12,15 +13,38 @@ const localStrategy = require('passport-local').Strategy;
 const User = require('./models/users');
 const cors = require('cors');
 const bycrypt = require('bcrypt');
+const socketIO = require('socket.io');
+const io = socketIO(http);
+const Comment = require('./models/message');
 
 async function start(PORT, URLDB) {
     try {
         await mongoose.connect(URLDB);
-        app.listen(PORT);
+        http.listen(PORT);
     } catch(err) {
         console.error(err);
     }
 }
+
+io.on('connection', (socket) => {
+    console.log(socket.id);
+
+    socket.on('join_book', (bookId) => {
+        socket.join(bookId);
+    });
+
+    socket.on('new_comment', async ({ bookId, username, message }) => {
+        io.to(bookId).emit('new_comment', { username, message });
+
+        try {
+            const newMessage = new Comment({ bookId, username, message });
+            await newMessage.save();
+        } catch (err) {
+            console.error(err);
+        }
+    });
+});
+
 
 app.use(cors());
 app.use(express.json());

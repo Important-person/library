@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path'); 
 const Book = require('../models/library');
+const Comment = require('../models/message');
 
 const router = express.Router();
 const fileMulter = require('../middleware/multerUpload');
@@ -99,6 +100,8 @@ router.get('/:id', async (req, res) => {
     const book = await Book.findById(id);
     if (!book) return res.redirect('/errors/404');
 
+    const comments = await Comment.find({ bookId: id });
+
     try {
         const response = await fetch(`http://counter:3001/counter/${id}/incr`, {
             method: 'POST',
@@ -115,14 +118,18 @@ router.get('/:id', async (req, res) => {
         res.render('library/view', {
             title: 'Книга',
             book,
-            counter
+            counter,
+            user: req.user,
+            comments
         });
     } catch (err) {
         console.error(err);
         res.redirect('library/view', {
             title: 'Книга',
             book,
-            counter: "Ошибка получения данных счетчика"
+            counter: "Ошибка получения данных счетчика",
+            user: req.user,
+            comments
         });
     }
 });
