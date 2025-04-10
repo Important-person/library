@@ -16,17 +16,13 @@ services:
       context: ./express
       dockerfile: Dockerfile
     ports:
-      - 3002:3002
-    volumes:
-      - ./express/src:/app
-      - /app/node_modules
+      - 3000:3000
     environment:
-      - PORT=3002
+      - PORT=3000
       - URLDB=mongodb://root:example@mongo:27017/mydatabase?authSource=admin
     depends_on:
-      - counter
-      - mongo
-      - mongo-express
+      mongo:
+        condition: service_healthy
 
   mongo:
     image: mongo
@@ -34,6 +30,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh -u root -p example --quiet || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   mongo-express:
     image: mongo-express

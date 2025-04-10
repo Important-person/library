@@ -1,6 +1,8 @@
-const Book = require('./models/library');
+require("reflect-metadata");
+const { Book } = require('./models/library');
+const { injectable } = require('inversify');
 
-interface Book {
+interface BookData {
     title: string;
     description: string;
     authors: string[];
@@ -10,17 +12,18 @@ interface Book {
 }
 
 interface IBook {
-    createBook(book: Book): Promise<void>;
-    getBook(id: number): Promise<Book | null>;
-    getBooks(): Promise<Book[]>;
-    updateBook(id: number, updatedBook: Book): Promise<void>;
+    createBook(book: BookData): Promise<void>;
+    getBook(id: number): Promise<BookData | null>;
+    getBooks(): Promise<BookData[]>;
+    updateBook(id: number, updatedBook: BookData): Promise<void>;
     deleteBook(id: number): Promise<void>;
 }
 
+@injectable()
 abstract class BooksRepository implements IBook {
     constructor() {}
     
-    async createBook(book: Book) {
+    async createBook(book: BookData) {
         try {
             const newBook = new Book({ ...book });
             await newBook.save();
@@ -29,7 +32,7 @@ abstract class BooksRepository implements IBook {
         }
     }
 
-    async getBook(id: number): Promise<Book | null> {
+    async getBook(id: number): Promise<BookData | null> {
         try {
             const book = await Book.findById(id);
             return book;
@@ -39,7 +42,7 @@ abstract class BooksRepository implements IBook {
         }
     }
 
-    async getBooks(): Promise<Book[]> {
+    async getBooks(): Promise<BookData[]> {
         try {
             const books = await Book.find({});
             return books;
@@ -48,7 +51,7 @@ abstract class BooksRepository implements IBook {
         }
     }
 
-    async updateBook(id: number, updatedBook: Book) {
+    async updateBook(id: number, updatedBook: BookData) {
         try {
             await Book.findByIdAndUpdate({_id: id}, { $set: updatedBook }, {new: true});
         } catch(err) {
@@ -65,3 +68,4 @@ abstract class BooksRepository implements IBook {
     }
 }
 
+module.exports = BooksRepository;

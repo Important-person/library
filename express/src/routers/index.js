@@ -2,6 +2,8 @@ const express = require('express');
 const path = require('path'); 
 const Book = require('../models/library');
 const Comment = require('../models/message');
+const container = require('../container');
+const BooksRepository = require('../books');
 
 const router = express.Router();
 const fileMulter = require('../middleware/multerUpload');
@@ -11,7 +13,7 @@ router.get('/', async (req, res) => {
         if (!req.isAuthenticated()) {
             return res.redirect('/api/user/login');
         } else {
-            const books = await Book.find({});
+            const books = await container.get(BooksRepository).getBooks();
             return res.render('index', {
                 title: 'Главная страница',
                 books
@@ -44,7 +46,7 @@ router.post('/create', fileMulter.single("fileBook"), async (req, res) => {
     });
 
     try {
-        await newBook.save();
+        await container.get(BooksRepository).createBook(newBook);
         res.redirect('/api/books');
     } catch(err) {
         console.error(err);
@@ -59,7 +61,7 @@ router.get('/update/:id', async (req, res) => {
 
     const { id } = req.params;
     try {
-        const book = await Book.findById(id);
+        const book = await container.get(BooksRepository).getBook(id);
         res.render('library/update', {
             title: 'Редактирование книги',
             book
@@ -83,7 +85,7 @@ router.post('/update/:id', fileMulter.single("fileBook"), async (req, res) => {
     }
 
     try {
-        await Book.findByIdAndUpdate({_id: id}, { $set: updateBook }, {new: true});
+        await container.get(BooksRepository).updateBook(id, updateBook);
         res.redirect('/api/books');
     } catch(err) {
         console.error(err);
@@ -97,7 +99,7 @@ router.get('/:id', async (req, res) => {
     }
 
     const { id } = req.params;
-    const book = await Book.findById(id);
+    const book = await container.get(BooksRepository).getBook(id);
     if (!book) return res.redirect('/errors/404');
 
     const comments = await Comment.find({ bookId: id });
@@ -138,7 +140,7 @@ router.post('/delete/:id', async (req, res) => {
     const { id } = req.params;
     
     try {
-        await Book.findByIdAndDelete(id);
+        await container.get(BooksRepository).deleteBook(id);
         res.redirect('/api/books');
     } catch(err) {
         res.redirect('errors/404');
@@ -152,7 +154,7 @@ router.get('/:id/download', async (req, res) => {
 
     const { id } = req.params;
     try {
-        const book = await Book.findById(id);
+        const book = await container.get(BooksRepository).getBook(id);
         if (!book?.fileName) return res.status(404).json({message: 'Файл не найден'});
 
         const pathFile = path.join(__dirname, '..', 'uploads', book.fileName);
