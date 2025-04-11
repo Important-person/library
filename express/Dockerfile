@@ -6,13 +6,12 @@ ARG NODE_ENV=production
 
 COPY package*.json ./
 COPY tsconfig.json ./
+COPY nodemon.json .
 
 RUN npm install --include=dev
-
-RUN npm install -g typescript
 
 COPY ./src /express/src
 
 RUN npm run build
 
-CMD [ "npm", "run", "server" ]
+CMD [ "npm", "run", "dev" ]

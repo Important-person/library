@@ -16,9 +16,12 @@ services:
       context: ./express
       dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - 3002:3002
+    volumes:
+      - ./express:/express
+      - /express/node_modules
     environment:
-      - PORT=3000
+      - PORT=3002
       - URLDB=mongodb://root:example@mongo:27017/mydatabase?authSource=admin
     depends_on:
       mongo:

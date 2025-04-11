@@ -1,11 +1,10 @@
-require("reflect-metadata");
-const { Book } = require('./models/library');
+const Book = require('./models/library');
 const { injectable } = require('inversify');
 
 interface BookData {
     title: string;
     description: string;
-    authors: string[];
+    author: string;
     favorite: string;
     fileCover: string;
     fileName: string;
@@ -25,7 +24,7 @@ abstract class BooksRepository implements IBook {
     
     async createBook(book: BookData) {
         try {
-            const newBook = new Book({ ...book });
+            const newBook = new Book(book);
             await newBook.save();
         } catch(err) {
             console.error(err);
@@ -45,9 +44,10 @@ abstract class BooksRepository implements IBook {
     async getBooks(): Promise<BookData[]> {
         try {
             const books = await Book.find({});
-            return books;
+            return books || [];
         } catch(err) {
             console.error(err);
+            return [];
         }
     }
 

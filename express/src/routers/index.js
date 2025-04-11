@@ -36,14 +36,14 @@ router.get('/create', (req, res) => {
 
 router.post('/create', fileMulter.single("fileBook"), async (req, res) => {
     const { title, description, author, favorite, fileCover, fileName } = req.body;
-    const newBook = new Book({
+    const newBook = {
         title,
         description,
         author, 
         favorite,
         fileCover,
         fileName
-    });
+    };
 
     try {
         await container.get(BooksRepository).createBook(newBook);
