@@ -6,11 +6,11 @@
     <ul>
         <% for (let i = 0; i < books.length; i++) { %>
             <li>
-                <a href="/api/books/<%= books[i].id %>"><%= books[i].title %></a>
-                <form action="/api/books/delete/<%= books[i].id %>" method="POST" style="display:inline;">
+                <a href="/api/books/<%= books[i]._id.toString() %>"><%= books[i].title %></a>
+                <form action="/api/books/delete/<%= books[i]._id.toString() %>" method="POST" style="display:inline;">
                     <button type="submit">Удалить</button>
                 </form>
-                <a href="/api/books/update/<%= books[i].id %>">
+                <a href="/api/books/update/<%= books[i]._id.toString() %>">
                     <button type="button">Редактировать</button>
                 </a>
             </li>

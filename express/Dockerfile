@@ -1,13 +1,17 @@
-FROM node:20.11.1
+FROM node:23.11.0-slim
 
 WORKDIR /express
 
 ARG NODE_ENV=production
 
 COPY package*.json ./
+COPY tsconfig.json ./
+COPY nodemon.json .
 
-RUN npm install
+RUN npm install --include=dev
 
 COPY ./src /express/src
 
-CMD [ "npm", "run", "server" ]
+RUN npm run build
+
+CMD [ "npm", "run", "dev" ]

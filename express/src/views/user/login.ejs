@@ -1,0 +1,16 @@
+<%- include('../port/header', { title: 'Вход' }) %>
+
+<h1><%= title %></h1>
+<form action="/api/user/login" method="post">
+    <label>Имя пользователя:</label><br>
+    <input type="text" name="username" required /><br><br>
+    
+    <label>Пароль:</label><br>
+    <input type="text" name="password" required /><br><br>
+    
+    <input type="submit" value="Войти" />
+</form>
+
+<p>Ещё нет аккаунта? <a href="/api/user/signup">Зарегистрируйтесь</a></p>
+
+<%- include('../port/footer') %>
